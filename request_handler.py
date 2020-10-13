@@ -1,8 +1,7 @@
-from entries import get_all_entries
-from moods import get_all_moods
 from http.server import BaseHTTPRequestHandler, HTTPServer
-
 import json
+from entries import get_all_entries, get_single_entry
+from moods import get_all_moods, get_single_mood
 
 class HandleRequests(BaseHTTPRequestHandler):
     def parse_url(self, path):
@@ -31,10 +30,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
 
-    # Here's a method on the class that overrides the parent's method.
-    # It handles any GET request.
     def do_GET(self):
-        # Set the response code to 'Ok'
+    # Set the response code to 'Ok'
         self._set_headers(200)
 
         # Your new console.log() that outputs to the terminal
@@ -46,13 +43,19 @@ class HandleRequests(BaseHTTPRequestHandler):
         print(id)
 
         if resource == "entries":
-            response = f"{get_all_entries}"
+            if id is not None:
+                response = f"{get_single_entry(id)}"
+            else:
+                response = f"{get_all_entries()}"
         elif resource == "moods":
-            response = f"{get_all_moods}"
+            if id is not None:
+                response = f"{get_single_mood(id)}"
+            else:
+                response = f"{get_all_moods()}"
         else:
             response = []
 
-        self.wfile.write(f"{response}".encode())
+        self.wfile.write(response.encode())
 
 def main():
     host = ''
