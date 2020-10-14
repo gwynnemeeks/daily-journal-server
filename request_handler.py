@@ -1,7 +1,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
-from entries import get_all_entries, get_single_entry
-from moods import get_all_moods, get_single_mood
+from entries import get_all_entries, get_single_entry, delete_entry
+from moods import get_all_moods, get_single_mood, delete_mood
 
 class HandleRequests(BaseHTTPRequestHandler):
     def parse_url(self, path):
@@ -56,6 +56,19 @@ class HandleRequests(BaseHTTPRequestHandler):
             response = []
 
         self.wfile.write(response.encode())
+
+    def do_DELETE(self):
+        self._set_headers(204)
+
+        (resource, id) = self.parse_url(self.path)
+
+        # Delete single entry and mood from the list
+        if resource == "entries":
+            delete_entry(id)
+        elif resource == "moods":
+            delete_mood(id)
+
+        self.wfile.write("".encode())
 
 def main():
     host = ''

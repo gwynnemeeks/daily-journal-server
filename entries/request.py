@@ -3,7 +3,7 @@ import json
 from models import Entry
 
 def get_all_entries():
-    with sqlite3.connect("./journalentries.db") as conn:
+    with sqlite3.connect("./dailyjournal.db") as conn:
 
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -31,7 +31,7 @@ def get_all_entries():
     return json.dumps(entries)
 
 def get_single_entry(id):
-    with sqlite3.connect("./journalentries.db") as conn:
+    with sqlite3.connect("./dailyjournal.db") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
 
@@ -51,3 +51,12 @@ def get_single_entry(id):
         entry = Entry(data['id'], data['concept'], data['entry'], data['date'], data['mood_id'])
 
         return json.dumps(entry.__dict__)
+
+def delete_entry(id):
+    with sqlite3.connect("./dailyjournal.db") as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        DELETE FROM entries
+        WHERE id = ?
+        """, (id, ))
