@@ -44,18 +44,25 @@ def get_single_entry(id):
 
         db_cursor.execute("""
         SELECT
-            e.id,
+           e.id,
             e.concept,
             e.entry,
             e.date,
-            e.mood_id
+            e.mood_id,
+            m.id moodId,
+            m.label
         FROM entries e
-        WHERE a.id = ?
+        JOIN Mood m ON e.mood_id = m.id
+        WHERE e.id = ?
         """, ( id, ))
 
         data = db_cursor.fetchone()
 
         entry = Entry(data['id'], data['concept'], data['entry'], data['date'], data['mood_id'])
+
+        mood = Mood(data['moodId'], data['label'])
+
+        entry.mood = mood.__dict__
 
         return json.dumps(entry.__dict__)
 
